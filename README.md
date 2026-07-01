@@ -51,6 +51,7 @@ flowchart LR
         TRAJ --> FINAL
 
         FINAL --> O1[output/ranked_candidates.csv]
+        FINAL --> O1X[output/ranked_candidates.xlsx]
         FINAL --> O2[output/score_breakdown.csv]
         FINAL --> O3[output/candidate_briefs.csv]
         FINAL --> O4[output/full_analysis.json]
@@ -72,6 +73,7 @@ talent-intelligence/
         job_dna.json              # Cached JobDNA (generated after first run)
     output/
         ranked_candidates.csv
+        ranked_candidates.xlsx
         score_breakdown.csv
         candidate_briefs.csv
         full_analysis.json
@@ -295,15 +297,19 @@ After a successful run, `output/` includes:
      - Default columns: `candidate_id`, `rank`, `score`, `reasoning`
      - If `data/sample_submission.csv` exists, its header is used automatically
 
-2. `score_breakdown.csv`
+2. `ranked_candidates.xlsx`
+    - Excel version of the ranked shortlist for easier review and sharing
+    - Contains the same ranked columns as the CSV export
+
+3. `score_breakdown.csv`
      - Transparent signal-level values per candidate
      - Includes semantic, hard, LLM, trajectory, and final score columns
 
-3. `candidate_briefs.csv`
+4. `candidate_briefs.csv`
      - Recruiter-facing shortlist brief
      - Includes verdict, strengths, risks, red flags, interview probes
 
-4. `full_analysis.json`
+5. `full_analysis.json`
      - Full detailed record for each candidate
      - Best for deep analysis, auditing, and debugging
 

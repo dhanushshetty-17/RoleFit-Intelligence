@@ -6,6 +6,8 @@ from pathlib import Path
 from statistics import mean, median, pstdev
 from typing import Any
 
+import pandas as pd
+
 
 class RankedOutputGenerator:
     def __init__(self, output_dir: str | Path = "output") -> None:
@@ -15,6 +17,7 @@ class RankedOutputGenerator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         ranked_path = self.output_dir / "ranked_candidates.csv"
+        ranked_xlsx_path = self.output_dir / "ranked_candidates.xlsx"
         full_path = self.output_dir / "full_analysis.json"
         breakdown_path = self.output_dir / "score_breakdown.csv"
         briefs_path = self.output_dir / "candidate_briefs.csv"
@@ -37,6 +40,20 @@ class RankedOutputGenerator:
                 }
                 row.update({key: result.get(key, "") for key in header if key not in row})
                 writer.writerow({field: row.get(field, "") for field in header})
+
+        ranked_rows = []
+        for result in sorted(ranked_results, key=lambda item: item["rank"]):
+            row = {
+                "candidate_id": result.get("candidate_id", ""),
+                "rank": result.get("rank", ""),
+                "score": float(result.get("final_score", 0.0)),
+                "reasoning": result.get("reason_for_fit", ""),
+            }
+            row.update({key: result.get(key, "") for key in header if key not in row})
+            ranked_rows.append(row)
+
+        ranked_df = pd.DataFrame(ranked_rows, columns=header)
+        ranked_df.to_excel(ranked_xlsx_path, index=False, sheet_name="Ranked Candidates")
 
         with full_path.open("w", encoding="utf-8") as f:
             json.dump(ranked_results, f, indent=2, ensure_ascii=False, default=str)
@@ -76,7 +93,7 @@ class RankedOutputGenerator:
 
         self._print_summary(ranked_results[:10])
         self._print_distribution(ranked_results)
-        return {"ranked": ranked_path, "full": full_path, "breakdown": breakdown_path, "briefs": briefs_path}
+        return {"ranked": ranked_path, "ranked_xlsx": ranked_xlsx_path, "full": full_path, "breakdown": breakdown_path, "briefs": briefs_path}
 
     def _print_summary(self, top_results: list[dict[str, Any]]) -> None:
         print("\nTop 10 Candidates")
