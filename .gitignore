@@ -1,0 +1,22 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+
+# Logs and local editor/runtime noise
+*.log
+
+# Generated pipeline artifacts
+output/*
+!output/.gitkeep
+
+# Large or generated local data
+data/candidates.jsonl
+data/job_dna.json
